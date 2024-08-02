@@ -224,11 +224,11 @@ print(type(date))
 
 
 
-path = './_save/keras32_mcp2/'
+path = './_save/keras39_mcp2/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'   #'1000-0.7777.hdf5' (파일 이름. 텍스트)
 # {epoch:04d}-{val_loss:.4f} fit에서 빼와서 쓴것. 쭉 써도 되는데 가독성이 떨어지면 안좋음
 # 로스는 소수점 이하면 많아지기 때문에 크게 잡은것
-filepath = "".join([path, 'k32_05',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
+filepath = "".join([path, 'k39_05',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
 # 생성 예: ""./_save/keras29_mcp/k29_0726_1654_1000-0.7777.hdf5"   그냥 텍스트 파일. 문자를 생성한것
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
@@ -266,18 +266,13 @@ sampleSubmission_csv['count'] = y_submit
 print(sampleSubmission_csv)
 print(sampleSubmission_csv.shape)
 
-sampleSubmission_csv.to_csv(path + "sampleSubmission_0729_1409.csv")
+"""sampleSubmission_csv.to_csv(path + "sampleSubmission_0729_1409.csv")"""
 
 print('로스 : ', loss)
 print('r2스코어 : ', r2)
 print("걸리시간 : ", round(end - start, 2), "초")
 
 
-if(gpus):
-    print("쥐피유 돈다!!!")
-else:
-    print("쥐피유 없다! xxxxx")
-    
     
 # 로스 :  22980.806640625
 # r2스코어 :  0.24107112558755084
@@ -289,3 +284,9 @@ else:
 # r2스코어 :  0.24132418042822312
 # 걸리시간 :  3.96 초
 # 쥐피유 돈다!!!
+
+
+# dnn -> cnn
+# 로스 :  23052.474609375
+# r2스코어 :  0.2387044317204825
+# 걸리시간 :  6.06 초

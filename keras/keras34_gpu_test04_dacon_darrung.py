@@ -207,7 +207,7 @@ submission_csv['count'] = y_submit
 print(submission_csv)
 print(submission_csv.shape)
 
-submission_csv.to_csv(path + "submission_0725_1545.csv")
+"""submission_csv.to_csv(path + "submission_0725_1545.csv")"""
 
 print('로스 : ', loss)
 print("r2스코어 : ", r2)

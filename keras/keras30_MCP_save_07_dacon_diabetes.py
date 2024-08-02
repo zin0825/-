@@ -121,7 +121,7 @@ end = time.time()
 model.save('./_save/keras30_mcp/keras30_07_dacon_diabetes_save.hdf5')
 
 #4. 평가, 예측
-loss = model.evaluate(x_test, y_test)
+loss = model.evaluate(x_test, y_test, verbose=1)
 print("로스 : ", loss[0])
 print("ACC : ", round(loss[1], 3))
 
