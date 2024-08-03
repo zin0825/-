@@ -26,20 +26,18 @@ y2 = np.array(range(13001, 13101))   # 비트코인 가겨.
 # 컨텐티드 하고 분기하는거 안배움
 
 
-
-x4_dataset = np.array([range(100, 105), range(401, 406)]).T   # (2, 100) -> (100 ,2)
+x4_dataset = np.array([range(100, 106), range(400, 406)]).T   # (2, 100) -> (100 ,2)
                     # 삼성 종가, 하이닉스 종가
-x5_dataset = np.array([range(201, 206), range(511, 516),
-                       range(250, 255)]).transpose()
+x5_dataset = np.array([range(200, 206), range(510, 516),
+                       range(249, 255)]).T
                     # 원유, 환율, 금시세  레이어 20개를 넣어서 5개로 나눌거야 그러기 위해 5개로 나눔
-x6_dataset = np.array([range(100, 105), range(401, 406),
-                       range(177, 182), range(133, 138)]).T
-
+x6_dataset = np.array([range(100, 106), range(400, 406),
+                       range(177, 183), range(133, 139)]).T
 
 
 
 x1_train, x1_test, x2_train, x2_test, x3_train, x3_test, \
-    y_train, y_test, y_train2, y_test2 = train_test_split(
+    y_train, y_test, y2_train, y2_test = train_test_split(
         x1_dataset, x2_dataset, x3_dataset, 
         y1, y2, train_size=0.7, random_state=777)
 
@@ -85,7 +83,7 @@ model = Model(inputs=[input1, input11, input111], outputs=[last_output, last_out
 
 
 #3. 컴파일, 훈련
-model.compile(loss='mse', optimizer='adam', metrics='mse')
+model.compile(loss='mse', optimizer='adam')
 
 start = time.time()
 
@@ -93,22 +91,23 @@ es = EarlyStopping(monitor='val_loss', mode='min',
                    patience=10, verbose=1,
                    restore_best_weights=True)
 
-model.fit([x1_train, x2_train, x3_train], [y_train, y_train2], epochs=1000, batch_size=98,
+
+model.fit([x1_train, x2_train, x3_train], [y_train, y2_train], epochs=1000, batch_size=3,
           validation_split=0.3, verbose=1, callbacks=[es])
 
 
-path = './_save/keras62_02/'
-model.save(path + 'keras62_02_03.h5')
+path = './_save/keras62_03/'
+model.save(path + 'keras62_03_05.h5')
 
 end = time.time()
 
 
 #4. 평가, 예측
-loss = model.evaluate([x1_test, x2_test, x3_test], [y_test, y_test2], verbose=1)
+loss = model.evaluate([x1_test, x2_test, x3_test], [y_test, y2_test], verbose=1)
 
 y_pred = model.predict([x4_dataset, x5_dataset, x6_dataset])
 
-# y_pred = np.reshape(y_pred, (y_pred.shape[0],))
+# y_pred = np.reshape(y_pred, (y_pred.shape[0],)) 
 
 print('로스 : ', loss)
 print('예측값[3101:3105] : ', y_pred[0], y_pred[1])
@@ -121,47 +120,88 @@ print('걸린 시간 : ', round(end - start, 2), '초')
 metrics='mse' 있으면 로스가 여러개 나옴. 안넣으면 3개 나와야함
 """
 
-# 로스 :  [112061.96875, 112061.96875]
-# 예측값[3101:3105] :  [3344.2197 3354.539  3364.8706 3375.203  3385.5354]
-# 걸린 시간 :  1.46 초
-# keras62_02_01.h5
-
-# 로스 :  [1228.0770263671875, 652.3941040039062, 575.6829833984375, 652.3941040039062, 575.6829833984375]
-# 예측값[3101:3105] :  [array([[3082.281 ],
-#        [3087.8044],
-#        [3093.3284],
-#        [3098.8518],
-#        [3104.391 ]], dtype=float32), array([[13233.098],
-#        [13257.203],
-#        [13281.308],
-#        [13305.411],
-#        [13329.597]], dtype=float32)]
-# 걸린 시간 :  6.26 초
 
 
-# 로스 :  [2595249.0, 454862.09375, 2140387.0, 454862.09375, 2140387.0]
-# 예측값[3101:3105] :  [[4247.6836]
-#  [4260.9297]
-#  [4274.176 ]
-#  [4287.421 ]
-#  [4300.667 ]] [[15340.288]
-#  [15388.539]
-#  [15436.793]
-#  [15485.046]
-#  [15533.3  ]]
-# 걸린 시간 :  2.42 초
-# keras62_02_02.h5
+# x4_dataset = np.array([range(100, 105), range(401, 406)]).T   # (2, 100) -> (100 ,2)
+#                     # 삼성 종가, 하이닉스 종가
+# x5_dataset = np.array([range(201, 206), range(511, 516),
+#                        range(250, 255)]).transpose()
+#                     # 원유, 환율, 금시세  레이어 20개를 넣어서 5개로 나눌거야 그러기 위해 5개로 나눔
+# x6_dataset = np.array([range(100, 105), range(401, 406),
+#                        range(177, 182), range(133, 138)]).T
 
 
-# 로스 :  [4101095.5, 1735395.25, 2365700.25, 1735395.25, 2365700.25]
-# 예측값[3101:3105] :  [[5072.8906]
-#  [5089.4736]
-#  [5106.0645]
-#  [5122.654 ]
-#  [5139.245 ]] [[15666.868]
-#  [15717.744]
-#  [15768.662]
-#  [15819.581]
-#  [15870.499]]
-# 걸린 시간 :  1.84 초
-# keras62_02_03.h5
+
+# epochs=1000, batch_size=98
+# 로스 :  [5026673.0, 2799955.25, 2226717.5, 2799955.25, 2226717.5]
+# 예측값[3101:3105] :  [[5504.2163]
+#  [5522.111 ]
+#  [5540.0034]
+#  [5557.898 ]
+#  [5575.7905]] [[15169.17 ]
+#  [15217.64 ]
+#  [15266.11 ]
+#  [15314.582]
+#  [15363.051]]
+# 걸린 시간 :  2.24 초
+# keras62_03_01.h5
+
+
+# metrics='mse'
+# epochs=1000, batch_size=8
+# 로스 :  [48.56193161010742, 2.1825482845306396, 46.3793830871582, 2.1825482845306396, 46.3793830871582]
+# 예측값[3101:3105] :  [[3115.3076]
+#  [3122.674 ]
+#  [3130.042 ]
+#  [3137.41  ]
+#  [3144.7778]] [[13165.503]
+#  [13195.825]
+#  [13226.157]
+#  [13256.491]
+#  [13286.827]]
+# 걸린 시간 :  7.67 초
+# keras62_03_02.h5
+
+
+# metrics='mse' xxx
+# batch_size=3
+# 로스 :  [14.260804176330566, 0.4908919036388397, 13.769912719726562]
+# 예측값[3101:3105] :  [[3108.3774]
+#  [3113.0635]
+#  [3117.751 ]
+#  [3122.344 ]
+#  [3126.9377]] [[13138.193 ]
+#  [13156.807 ]
+#  [13175.423 ]
+#  [13194.6455]
+#  [13213.974 ]]
+# 걸린 시간 :  11.22 초
+# keras62_03_03.h5
+
+# 로스 :  [8.03477954864502, 0.30147096514701843, 7.733308792114258]
+# 예측값[3101:3105] :  [[3107.0415]
+#  [3111.6914]
+#  [3116.5637]
+#  [3121.5432]
+#  [3126.5647]] [[13131.563]
+#  [13150.266]
+#  [13169.832]
+#  [13189.813]
+#  [13209.951]]
+# 걸린 시간 :  39.59 초
+# keras62_03_04.h5
+
+
+
+
+# x4_dataset = np.array([range(100, 106), range(400, 406)]).T   # (2, 100) -> (100 ,2)
+#                     # 삼성 종가, 하이닉스 종가
+# x5_dataset = np.array([range(200, 206), range(510, 516),
+#                        range(249, 255)]).T
+#                     # 원유, 환율, 금시세  레이어 20개를 넣어서 5개로 나눌거야 그러기 위해 5개로 나눔
+# x6_dataset = np.array([range(100, 106), range(400, 406),
+#                        range(177, 183), range(133, 139)]).T
+
+
+
+# keras62_03_05.h5

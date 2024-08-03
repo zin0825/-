@@ -69,16 +69,20 @@ input111 = Input(shape=(4,))
 dense111 = Dense(100, activation='relu', name='bit111')(input111)
 dense211 = Dense(200, activation='relu', name='bit211')(dense111)
 output111 = Dense(300, activation='relu', name='bit311')(dense211)
+model111 = Model(inputs=input111, outpyts=output111)
 
 
 #2-4. 모델 병합
 merge1 = Concatenate(name='mg1')([output1, output11, output111])
 merge2 = Dense(10, name='mg2')(merge1)
 merge3 = Dense(5, name='mg3')(merge2)
-last_output = Dense(1, name='last')(merge3)
 middle_output = Dense(1, name='last2')(merge3)
 
-# model = Model(inputs=[input1, input11, input111], outputs=[last_output, last_output2])
+
+last_output = Dense(1, name='last')(middle_output)
+last_output2 = Dense(1, name='last2')(middle_output)
+
+model = Model(inputs=[input1, input11, input111], outputs=[last_output, last_output2])
 
 
 #2-5. 분기1.

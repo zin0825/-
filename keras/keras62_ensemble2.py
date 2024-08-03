@@ -19,14 +19,13 @@ x3_dataset = np.array([range(100), range(301, 401),
 
 # 거시기1, 거시기2, 거시기3, 거시기4
 
-x4_dataset = np.array([range(100, 105), range(401, 406)]).T   # (2, 100) -> (100 ,2)
+x4_dataset = np.array([range(100, 106), range(400, 406)]).T   # (2, 100) -> (100 ,2)
                     # 삼성 종가, 하이닉스 종가
-x5_dataset = np.array([range(201, 206), range(511, 516),
-                       range(250, 255)]).transpose()
+x5_dataset = np.array([range(200, 206), range(510, 516),
+                       range(249, 255)]).T
                     # 원유, 환율, 금시세  레이어 20개를 넣어서 5개로 나눌거야 그러기 위해 5개로 나눔
-x6_dataset = np.array([range(100, 105), range(401, 406),
-                       range(177, 182), range(133, 138)]).T
-
+x6_dataset = np.array([range(100, 106), range(400, 406),
+                       range(177, 183), range(133, 139)]).T
 
 y = np.array(range(3001, 3101))   # 한강의 화씨 온도.
 
@@ -59,7 +58,9 @@ output11 = Dense(300, activation='relu', name='bit31')(dense21)
 input111 = Input(shape=(4,))
 dense111 = Dense(100, activation='relu', name='bit111')(input111)
 dense211 = Dense(200, activation='relu', name='bit211')(dense111)
-output111 = Dense(300, activation='relu', name='bit311')(dense211)
+dense311 = Dense(200, activation='relu', name='bit311')(dense211)
+dense411 = Dense(200, activation='relu', name='bit411')(dense311)
+output111 = Dense(300, activation='relu', name='bit511')(dense411)
 
 
 #2-4. 모델 병합
@@ -82,12 +83,12 @@ es = EarlyStopping(monitor='val_loss', mode='min',
                    patience=10, verbose=1,
                    restore_best_weights=True)
 
-model.fit([x1_train, x2_train, x3_train], y_train, epochs=1000, batch_size=98,
+model.fit([x1_train, x2_train, x3_train], y_train, epochs=1000, batch_size=5,
           validation_split=0.3, verbose=1, callbacks=[es])
 
 
 path = './_save/keras62_02/'
-model.save(path + 'keras62_02_02.h5')
+model.save(path + 'keras62_02_05.h5')
 
 end = time.time()
 
@@ -95,16 +96,73 @@ end = time.time()
 #4. 평가, 예측
 loss = model.evaluate([x1_test, x2_test, x3_test], y_test, verbose=1)
 
+
+
+# x4_dataset = np.array([range(100, 106), range(400, 406)]).T   # (2, 100) -> (100 ,2)
+#                     # 삼성 종가, 하이닉스 종가
+# x5_dataset = np.array([range(200, 206), range(510, 516),
+#                        range(249, 255)]).T
+#                     # 원유, 환율, 금시세  레이어 20개를 넣어서 5개로 나눌거야 그러기 위해 5개로 나눔
+# x6_dataset = np.array([range(100, 106), range(400, 406),
+#                        range(177, 183), range(133, 139)]).T
+
+
+
 y_pred = model.predict([x4_dataset, x5_dataset, x6_dataset])
 
-y_pred = np.reshape(y_pred, (y_pred.shape[0],))
+# y_pred = np.reshape(y_pred, (y_pred.shape[0],))
 
 print('로스 : ', loss)
 print('예측값[3101:3105] : ', y_pred)
 print('걸린 시간 : ', round(end - start, 2), '초')
 
 
+
+# batch_size=98
 # 로스 :  [112061.96875, 112061.96875]
 # 예측값[3101:3105] :  [3344.2197 3354.539  3364.8706 3375.203  3385.5354]
 # 걸린 시간 :  1.46 초
 # keras62_02_01.h5
+
+
+# batch_size=8
+# 로스 :  [16.500267028808594, 16.500267028808594]
+# 예측값[3101:3105] :  [[3104.9443]
+#  [3109.9026]
+#  [3114.8616]
+#  [3119.824 ]
+#  [3124.776 ]
+#  [3129.807 ]]
+# 걸린 시간 :  3.96 초
+# keras62_02_02.h5
+
+# 로스 :  [0.8943962454795837, 0.8943962454795837]
+# 예측값[3101:3105] :  [[3103.679 ]
+#  [3109.1257]
+#  [3114.573 ]
+#  [3120.0203]
+#  [3125.4675]
+#  [3130.9143]]
+# 걸린 시간 :  7.1 초
+# keras62_02_03.h5
+
+# batch_size=5
+# 로스 :  [1.1096599102020264, 1.1096599102020264]
+# 예측값[3101:3105] :  [[3100.1804]
+#  [3104.6738]
+#  [3109.1794]
+#  [3113.716 ]
+#  [3118.269 ]
+#  [3122.8213]]
+# 걸린 시간 :  4.65 초
+# keras62_02_04.h5
+
+# 로스 :  [0.7571924328804016, 0.7571924328804016]
+# 예측값[3101:3105] :  [[3101.9631]
+#  [3106.8542]
+#  [3111.7703]
+#  [3116.7117]
+#  [3121.6562]
+#  [3126.6147]]
+# 걸린 시간 :  11.29 초
+# keras62_02_05.h5
