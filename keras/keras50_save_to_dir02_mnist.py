@@ -1,3 +1,20 @@
+"""
+keras49_augment2_mnist.py
+keras49_augment3_cifar10.py
+keras49_augment4_cifar100.py
+keras49_augment5_cat_dog.py
+keras49_augment6_man_woman.py
+keras49_augment7_horse.py
+keras49_augment8_rpg.py
+"""
+
+# cat dog 은 image 폴더꺼 수치화(2만개)하고,
+# 캐글 폴더꺼 수치화(2.5만개) 해서 합치고
+# 증폭 5천개 추가   // (총 5.5만개)
+#해서 맹그러 서 kaggel에 제출까지
+
+
+
 
 
 import numpy as np
@@ -11,75 +28,78 @@ import time
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.preprocessing import MaxAbsScaler, RobustScaler
 from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import matplotlib.pyplot as plt
+
+
 
 #1. 데이터
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
-# print(x_train)   # 샘플만 요약해 나와서 000만 나옴
-print(x_train[0])
-print("y_train[0] : ", y_train[0])
-
-print(x_train.shape, y_train.shape)   # (60000, 28, 28) (60000,)  6만의 28, 28, 1 / 컬러는 6만의 28, 28, 3
-print(x_test.shape, y_test.shape)   # (10000, 28, 28) (10000,)   만의 28, 28, 1
+print(x_train.shape, y_train.shape)   # (60000, 28, 28) (60000,) 샘플만 요약해 나와서 000만 나옴
+print(x_test.shape, y_test.shape)   # (10000, 28, 28) (10000,)
 
 
-x_train = x_train.reshape(60000, 28, 28, 1)   # 1이 없으면 2차원이니까 3차원으로 정의하기 위해
+train_datagen = ImageDataGenerator(
+    rescale=1./255,   # 1 나누기 255, 0에서 스켈일링
+    # horizontal_flip=True,   # 수평 뒤집기
+    # vertical_flip=True,   # 수직 뒤집기
+    width_shift_range=0.2,   # 평행이동
+    height_shift_range=0.1,   # 평행이동 수직 (위 아래로)
+    rotation_range=5,   # 정해진 각도만큼 이미지 회전
+    # zoom_range=1.2,   # 축소 또는 화대, 1.2배
+    # shear_range=0.7,   # 좌표 하나를 고정시키고 다른 몇개의 좌료를 이동시키는 변환. (개의 입을 고정 시키고 턱을 벌린다)
+    fill_mode='nearest',   # 너의 빈자리 비슷한거로 채워줄게
+)
+
+augment_size =  40000
+
+print(x_train.shape[0])   # 60000
+randidx = np.random.randint(x_train.shape[0], size=augment_size)
+print(randidx)   # [16546 57499 17658 ... 45836 48290 52924]
+
+
+print(x_train[0].shape)   # (28, 28)
+
+x_augmented = x_train[randidx].copy()
+y_augmented = y_train[randidx].copy()
+print(x_augmented.shape, y_augmented.shape)   # (40000, 28, 28) (40000,)
+
+
+x_augmented = x_augmented.reshape(x_augmented.shape[0],
+                                  x_augmented.shape[1],
+                                  x_augmented.shape[2], 1)
+print(x_augmented.shape)   # (40000, 28, 28, 1)
+
+
+x_augmented = train_datagen.flow(x_augmented, y_augmented,
+                                 batch_size=augment_size,
+                                 shuffle=False,
+                                 save_to_dir='c:/프로그램/ai5/_data/_save_img/02_mnist').next()[0]
+
+print(x_augmented.shape)   # (40000, 28, 28, 1)
+
+
+
+
+
+"""
+x_train = x_train.reshape(60000, 28, 28, 1)
 x_test = x_test.reshape(10000, 28, 28, 1)
 
+print(x_train.shape, x_test.shape)   # (60000, 28, 28, 1) (10000, 28, 28, 1)
 
-# y_train = pd.get_dummies(y_train)   # 이걸 해야 10이 생김
-# y_test = pd.get_dummies(y_test)
+x_train = np.concatenate((x_train, x_augmented))
+y_train = np.concatenate((y_train, y_augmented))
 
-# print(x_train.shape, y_train.shape)   # (60000, 28, 28, 1) (60000, 10)
-# print(x_test.shape, y_test.shape)   # (10000, 28, 28, 1) (10000, 10)
-
-
-# ##### 스켈일링 1-1
-x_train = x_train/255.   # 소수점
-x_test = x_test/255.
-
-# print(np.max(x_train), np.min(x_train))   # 1.0 0.0
+print(x_train.shape, y_train.shape)   # (100000, 28, 28, 1) (100000,)
 
 
-###### 스케일링 1-2
-# x_train = (x_train - 127.5) / 127.5
-# x_test = (x_test - 127.5) / 127.5
-# print(np.max(x_train), np.min(x_train))   # 1.0 -1.0   스케일링 두번하면 문제 있으니 주의
-# 두 개 돌려봐서 좋은거 쓸 것
-
-###### 스케일링 2. MinMaxScaler(), StandardScaler()
-# x_train = x_train.reshape(60000, 28*28)
-# x_test = x_test.reshape(10000, 28*28)
-
-# scaler = MinMaxScaler()
-# x_train = scaler.fit_transform(x_train)
-# x_test = scaler.transform(x_test)
-# print(np.max(x_train), np.min(x_train))   # 1.0000000000000002 0.0
 
 
-# x_train = x_train.reshape(60000, 28, 28, 1)
-# x_test = x_test.reshape(10000, 28, 28, 1)
-# print(x_train.shape, x_test.shape)
+### 원핫 y 1-1 케라스 
+y_train = to_categorical(y_train)
+y_test = to_categorical(y_test)
 
-
-# ### 원핫 y 1-1 케라스 // 판다스, 사이킷런으로도 맹그러  항상 시작은 0부터다
-# y_train = to_categorical(y_train)
-# y_test = to_categorical(y_test)
-
-
-# # ### 원핫 y 1-2 판다스
-# y_train = pd.get_dummies(y_train)
-# y_test = pd.get_dummies(y_test)
-# # print(y_train.shape, y_test.shape)
-# # # 여기까지가 #1 완성 --------------------
-
-
-### 원핫 y 1-3 사이킷런
-from sklearn.preprocessing import OneHotEncoder
-ohe = OneHotEncoder(sparse=False)
-y_train = y_train.reshape(-1,1)
-y_test = y_test.reshape(-1,1)
-y_train = ohe.fit_transform(y_train)
-y_test = ohe.fit_transform(y_test)
 
 
 #2. 모델
@@ -144,7 +164,7 @@ acc = accuracy_score(y_test, y_predict) # 예측한 y값과 비교
 print("acc_score : ", acc)
 print("걸린 시간 : ", round(end - start,2),'초')
 print('로스 : ', loss)
-
+"""
 
 # 로스 :  [0.3007262349128723, 0.9153000116348267]
 # acc :  0.92
@@ -166,6 +186,13 @@ print('로스 : ', loss)
 # 걸린 시간 :  11.68 초
 
 
+# hamsu
 # acc_score :  0.3154
 # 걸린 시간 :  73.41 초
 # 로스 :  [2.099454402923584, 0.31540000438690186]
+
+
+# augmente
+# acc_score :  0.202
+# 걸린 시간 :  159.48 초
+# 로스 :  [2.1953086853027344, 0.20200000703334808]
