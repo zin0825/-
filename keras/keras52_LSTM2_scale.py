@@ -20,7 +20,7 @@ print(x.shape)   # (13, 3, 1)
 
 #2. 모델 구성
 model = Sequential()
-model.add(LSTM(60, input_shape=(3,1)))
+model.add(LSTM(60, input_shape=(3,1)))   # shape 차원 넣어주기
 model.add(Dense(60, activation='relu'))
 model.add(Dense(56, activation='relu'))
 model.add(Dense(56, activation='relu'))
@@ -63,7 +63,7 @@ start = time.time()
 
 
 # mcp = ModelCheckpoint(
-#     monitor='val_loss',
+#     monitor='val_loss',   # 현재 RNN에서 이거하면 성능 떨어짐 
 #     mode='auto',
 #     verbose=1,
 #     save_best_only=True, # 가장 좋은 놈을 저장
