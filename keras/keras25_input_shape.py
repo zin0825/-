@@ -37,7 +37,7 @@ print(y.shape)   # (506, )
 #2. 모델 구성
 model = Sequential()
 # model.add(Dense(10, input_dim=13))   # 특성은 많으면 좋음, 한계가 있음, 인풋딤에 다차원 행렬이 들어가면 안됨 
-model.add(Dense(32, input_shape=(13,)))   # 이미지 input_shape=(8,8,1) ,하나 있는건 벡터이기 때문
+model.add(Dense(32, input_shape=(13,)))   # 이미지 input_shape=(8,8,1) ,하나 있는건 벡터이기 때문 13,
 model.add(Dense(16))
 model.add(Dense(16))
 model.add(Dense(16))

@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd 
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Dropout, Input, Conv2D, MaxPooling2D, Flatten
+from tensorflow.keras.layers import Dense, SimpleRNN, LSTM, GRU
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
 import time
@@ -51,16 +52,15 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
                                                     shuffle=True,
                                                     random_state=5757)
 
-print(x.shape, y.shape)   # (1328, 9) (1328,)
+
+print(x.shape, y.shape)   # (1328, 3, 3, 1) (1328,)
 
 
 #2. 모델 구성
 model = Sequential()
-model.add(Conv2D(500, (3,3), activation='relu', input_shape=(3,3,1), strides=1, padding='same')) 
-model.add(Conv2D(filters=250, kernel_size=(3,3), activation='relu', strides=1,padding='same'))
-model.add(MaxPooling2D())
-model.add(Conv2D(125, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Flatten())                            
+model.add(LSTM(500, input_shape=(3,3))) 
+model.add(Dense(units=250, activation='relu'))
+model.add(Dense(units=125, activation='relu'))
 
 model.add(Dense(units=79, activation='relu'))
 model.add(Dense(units=50, activation='relu'))
@@ -87,9 +87,9 @@ date = date.strftime("%m%d_%H%M")
 # print(date)     
 # print(type(date))  
 
-path = './_save/keras39/'
+path = './_save/keras59/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5' 
-filepath = "".join([path, 'k39_04_01_', date, '_', filename])  
+filepath = "".join([path, 'k59_04_', date, '_', filename])  
 
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
@@ -134,3 +134,9 @@ print("로스 : ", loss)
 # dnn -> cnn
 # 걸린 시간 : 14.84 초
 # 로스 :  [2063.5146484375, 0.0]
+
+
+# LSTM
+# 걸린 시간 : 11.1 초
+# 로스 :  [2151.718994140625, 0.0]
+# k59_04_

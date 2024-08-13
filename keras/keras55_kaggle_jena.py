@@ -178,7 +178,7 @@ es = EarlyStopping(monitor='val_loss', mode='min',
 # print(x_train.shape, y_train.shape)
 
 
-model.fit(x_train, y_train, epochs=100, batch_size=1202,
+model.fit(x_train, y_train, epochs=100, batch_size=1024,
           verbose=1, 
           validation_split=0.3,
           callbacks=[es])
