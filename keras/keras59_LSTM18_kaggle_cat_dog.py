@@ -52,22 +52,32 @@ start1 = time.time()
 
 np_path = 'c:/ai5/_data/_save_npy/'
 
-x_train = np.load(np_path + 'keras41_03_01_x_train.npy')
-y_train = np.load(np_path + 'keras41_03_01_y_train.npy')
-x_test = np.load(np_path + 'keras41_03_01_x_test.npy') # x트레인 끼리 와이 트레인끼 붙여ㅕㅕㅕ 테스트
-y_test = np.load(np_path + 'keras41_03_01_y_test.npy')   # 위 엑스 트레인, 아래 엑스 트레인 붙이고 엑스 테스트는 밑에서만 활용
+x_train = np.load(np_path + 'kares43_01_x_train.npy')
+y_train = np.load(np_path + 'kares43_01_y_train.npy')
+x_test = np.load(np_path + 'kares43_01_x_test.npy') # x트레인 끼리 와이 트레인끼 붙여ㅕㅕㅕ 테스트
+y_test = np.load(np_path + 'kares43_01_y_test.npy')   # 위 엑스 트레인, 아래 엑스 트레인 붙이고 엑스 테스트는 밑에서만 활용
 
-x_train2 = np.load(np_path + 'keras42_01_01_x_train.npy')
-y_train2 = np.load(np_path + 'keras42_01_01_y_train.npy')   
+# x_train2 = np.load(np_path + 'keras42_01_01_x_train.npy')
+# y_train2 = np.load(np_path + 'keras42_01_01_y_train.npy')   
 # x_test2 = np.load(np_path + 'keras42_01_01_x_test.npy')
 # y_test2 = np.load(np_path + 'keras42_01_01_y_test.npy')   # 이미지 테스트 필요 xxxxx
 
 
 
-x_train = np.concatenate((x_train, x_train2)) 
-y_train = np.concatenate((y_train, y_train2))
+# x_train = np.concatenate((x_train, x_train2)) 
+# y_train = np.concatenate((y_train, y_train2))
 
 
+
+x_train = x_train.reshape(x_test.shape[0],
+                          x_test.shape[1],
+                          x_test.shape[2] * x_train.shape[3])   # 4차원 -> 3차원으로 변경
+
+x_test = x_test.reshape(x_test.shape[0],
+                        x_test.shape[1],
+                        x_test.shape[2] * x_test.shape[3])
+
+print(x_train.shape, x_test.shape)
 
 
 
@@ -82,180 +92,180 @@ y_train = np.concatenate((y_train, y_train2))
 
 
 
-x_train, x_test, y_train, y_test = train_test_split(x_train, y_train,
-                                                    train_size=0.9,
-                                                    shuffle=True,
-                                                    random_state=111)
-end1 = time.time()
+# x_train, x_test, y_train, y_test = train_test_split(x_train, y_train,
+#                                                     train_size=0.9,
+#                                                     shuffle=True,
+#                                                     random_state=111)
+# end1 = time.time()
 
 
-print(x_train.shape, x_test.shape)  # (35997, 80, 80, 3) (4000, 80, 80, 3)
-
-
-
-augment_size =  10000
-
-print(x_train.shape[0])   # 35997
-
-randidx = np.random.randint(x_train.shape[0], size=augment_size)
-print(randidx)  # [27262  6557  3669 ... 33196 26536 25795]
-print(x_train[0].shape)   # (80, 80, 3)
-
-
-x_augmented = x_train[randidx].copy()
-y_augmented = y_train[randidx].copy()
-print(x_augmented.shape, y_augmented.shape)   # (10000, 80, 80, 3) (10000,)
-
-
-x_augmented = x_augmented.reshape(
-    x_augmented.shape[0],      
-    x_augmented.shape[1],     
-    x_augmented.shape[2], 3)  
+# print(x_train.shape, x_test.shape)  # (35997, 80, 80, 3) (4000, 80, 80, 3)
 
 
 
-print(x_train.shape, x_test.shape)  # (35997, 80, 80, 3) (4000, 80, 80, 3)
+# augment_size =  10000
 
-# # x_augmented = train_datagen.flow(x_augmented, y_augmented,
-# #                                  batch_size=augment_size,
-# #                                  shuffle=False).next()[0]
+# print(x_train.shape[0])   # 35997
 
-print(x_augmented.shape)   # (10000, 80, 80, 3)
-
-print(x_train.shape, x_test.shape)   # (35997, 80, 80, 3) (4000, 80, 80, 3)
-
-x_train = np.concatenate((x_train, x_augmented)) 
-y_train = np.concatenate((y_train, y_augmented))
+# randidx = np.random.randint(x_train.shape[0], size=augment_size)
+# print(randidx)  # [27262  6557  3669 ... 33196 26536 25795]
+# print(x_train[0].shape)   # (80, 80, 3)
 
 
-print(x_train.shape, y_train.shape)   # (45997, 80, 80, 3) (45997,)
-
-x_train = x_train.reshape(35997, 80, 80, 3)
-x_test = x_test.reshape(4000, 80, 80, 3)
-
-
-x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, 
-                                                    test_size=0.1, random_state=313)
+# x_augmented = x_train[randidx].copy()
+# y_augmented = y_train[randidx].copy()
+# print(x_augmented.shape, y_augmented.shape)   # (10000, 80, 80, 3) (10000,)
 
 
-end1 = time.time()
+# x_augmented = x_augmented.reshape(
+#     x_augmented.shape[0],      
+#     x_augmented.shape[1],     
+#     x_augmented.shape[2], 3)  
 
-print('걸린 시간1 : ', round(end1 - start1,2), "초")
+
+
+# print(x_train.shape, x_test.shape)  # (35997, 80, 80, 3) (4000, 80, 80, 3)
+
+# # # x_augmented = train_datagen.flow(x_augmented, y_augmented,
+# # #                                  batch_size=augment_size,
+# # #                                  shuffle=False).next()[0]
+
+# print(x_augmented.shape)   # (10000, 80, 80, 3)
+
+# print(x_train.shape, x_test.shape)   # (35997, 80, 80, 3) (4000, 80, 80, 3)
+
+# x_train = np.concatenate((x_train, x_augmented)) 
+# y_train = np.concatenate((y_train, y_augmented))
+
+
+# print(x_train.shape, y_train.shape)   # (45997, 80, 80, 3) (45997,)
+
+# x_train = x_train.reshape(35997, 80, 80, 3)
+# x_test = x_test.reshape(4000, 80, 80, 3)
+
+
+# x_train, x_test, y_train, y_test = train_test_split(x_train, y_train, 
+#                                                     test_size=0.1, random_state=313)
+
+
+# end1 = time.time()
+
+# print('걸린 시간1 : ', round(end1 - start1,2), "초")
 
 # 걸린 시간1 :  9.26 초
 
 
-#2. 모델 구성
-model = Sequential()
-model.add(LSTM(44, input_shape=(80, 80 * 3))) 
-model.add(Dense(44))
-model.add(Dense(40))
-model.add(Dropout(0.25))
-model.add(Dense(40))
-model.add(Dense(30))
-model.add(Dense(12))
-model.add(Dense(1, activation='softmax'))
-
-
-
-# model.add(Conv2D(44, (2,2), input_shape=(80, 80, 3), activation='relu',
-#                  strides=1, padding='same'))
-# model.add(BatchNormalization())
-# model.add(MaxPooling2D())
-# model.add(Conv2D(filters=44, kernel_size=(2,2), activation='relu', 
-#                  strides=1, padding='same'))
-# model.add(Conv2D(40, (2,2), strides=1, padding='same'))
+# #2. 모델 구성
+# model = Sequential()
+# model.add(LSTM(44, input_shape=(80, 80 * 3))) 
+# model.add(Dense(44))
+# model.add(Dense(40))
 # model.add(Dropout(0.25))
-# model.add(BatchNormalization())
-# model.add(Conv2D(40, (2,2), strides=1, padding='same'))
-# model.add(BatchNormalization())
-# model.add(Conv2D(30, (2,2), strides=1, padding='same'))
-# model.add(Flatten())
-
-# model.add(Dense(80, activation='relu'))
-# model.add(Dense(12, activation='relu'))
-# model.add(Dense(1, activation='sigmoid'))
-
-# model.summary()
-
-
-#3. 컴파일, 훈련
-model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
-
-start = time.time()
-
-es = EarlyStopping(monitor='val_loss', mode='min',
-                   patience=10,
-                   verbose=1,
-                   restore_best_weights=True)
-
-
-######################### cmp 세이브 파일명 만들기 끗 ###########################
-
-import datetime
-date = datetime.datetime.now()
-# print(date)    
-# print(type(date))  
-date = date.strftime("%m%d_%H%M")
-# print(date)     
-# print(type(date))  
-
-path = './_save/keras59/'
-filename = '{epoch:04d}-{val_loss:.4f}.hdf5' 
-filepath = "".join([path, 'k59_18_01_', date, '_', filename])  
-
-
-######################### cmp 세이브 파일명 만들기 끗 ###########################
-
-
-mcp = ModelCheckpoint(
-    monitor='val_loss',
-    mode='auto',
-    verbose=1,     
-    save_best_only=True,   
-    filepath=filepath)
-
-
-start = time.time()
-hist = model.fit(x_train, y_train, epochs=80, batch_size=4,
-          verbose=1, 
-          validation_split=0.3,
-          callbacks=[es, mcp])
-
-end = time.time()
+# model.add(Dense(40))
+# model.add(Dense(30))
+# model.add(Dense(12))
+# model.add(Dense(1, activation='softmax'))
 
 
 
-#4. 평가, 예측    
-# print("======================== 2. MCP 출력 ====================")
+# # model.add(Conv2D(44, (2,2), input_shape=(80, 80, 3), activation='relu',
+# #                  strides=1, padding='same'))
+# # model.add(BatchNormalization())
+# # model.add(MaxPooling2D())
+# # model.add(Conv2D(filters=44, kernel_size=(2,2), activation='relu', 
+# #                  strides=1, padding='same'))
+# # model.add(Conv2D(40, (2,2), strides=1, padding='same'))
+# # model.add(Dropout(0.25))
+# # model.add(BatchNormalization())
+# # model.add(Conv2D(40, (2,2), strides=1, padding='same'))
+# # model.add(BatchNormalization())
+# # model.add(Conv2D(30, (2,2), strides=1, padding='same'))
+# # model.add(Flatten())
 
-# path2 = 'C:\\프로그램\\ai5\\_save\\keras42\\'
-# model = load_model(path2 + 'k42_02_0805_1412_0009-0.0000.hdf5')  
+# # model.add(Dense(80, activation='relu'))
+# # model.add(Dense(12, activation='relu'))
+# # model.add(Dense(1, activation='sigmoid'))
 
-loss = model.evaluate(x_test, y_test, verbose=1, batch_size=12)
-
-y_pred = model.predict(x_test)
-print(y_pred)
-# [[0.25376353]
-#  [0.25376353]
-#  [0.25376353]
-#  ...
-#  [0.25376353]
-#  [0.25376353]
-#  [0.25376353]]
-
-y_pred = np.round(y_pred)
-print(y_pred)
+# # model.summary()
 
 
-print('걸린 시간1 : ', round(end1 - start1,2), "초")
+# #3. 컴파일, 훈련
+# model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
 
-acc = accuracy_score(y_test, y_pred)
-print(acc)
+# start = time.time()
 
-print('acc : ', acc)
-print('걸린 시간 : ', round(end - start,2), "초")
-print('로스 : ', loss)
+# es = EarlyStopping(monitor='val_loss', mode='min',
+#                    patience=10,
+#                    verbose=1,
+#                    restore_best_weights=True)
+
+
+# ######################### cmp 세이브 파일명 만들기 끗 ###########################
+
+# import datetime
+# date = datetime.datetime.now()
+# # print(date)    
+# # print(type(date))  
+# date = date.strftime("%m%d_%H%M")
+# # print(date)     
+# # print(type(date))  
+
+# path = './_save/keras59/'
+# filename = '{epoch:04d}-{val_loss:.4f}.hdf5' 
+# filepath = "".join([path, 'k59_18_01_', date, '_', filename])  
+
+
+# ######################### cmp 세이브 파일명 만들기 끗 ###########################
+
+
+# mcp = ModelCheckpoint(
+#     monitor='val_loss',
+#     mode='auto',
+#     verbose=1,     
+#     save_best_only=True,   
+#     filepath=filepath)
+
+
+# start = time.time()
+# hist = model.fit(x_train, y_train, epochs=80, batch_size=4,
+#           verbose=1, 
+#           validation_split=0.3,
+#           callbacks=[es, mcp])
+
+# end = time.time()
+
+
+
+# #4. 평가, 예측    
+# # print("======================== 2. MCP 출력 ====================")
+
+# # path2 = 'C:\\프로그램\\ai5\\_save\\keras42\\'
+# # model = load_model(path2 + 'k42_02_0805_1412_0009-0.0000.hdf5')  
+
+# loss = model.evaluate(x_test, y_test, verbose=1, batch_size=12)
+
+# y_pred = model.predict(x_test)
+# print(y_pred)
+# # [[0.25376353]
+# #  [0.25376353]
+# #  [0.25376353]
+# #  ...
+# #  [0.25376353]
+# #  [0.25376353]
+# #  [0.25376353]]
+
+# y_pred = np.round(y_pred)
+# print(y_pred)
+
+
+# print('걸린 시간1 : ', round(end1 - start1,2), "초")
+
+# acc = accuracy_score(y_test, y_pred)
+# print(acc)
+
+# print('acc : ', acc)
+# print('걸린 시간 : ', round(end - start,2), "초")
+# print('로스 : ', loss)
 
 
 

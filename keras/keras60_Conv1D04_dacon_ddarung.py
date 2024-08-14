@@ -44,7 +44,7 @@ y = train_csv['count']
 # print(y.shape)    # (1328,)
 x = x.to_numpy()
 
-x = x.reshape(1328, 3, 3, 1)
+x = x.reshape(1328, 9, 1)
 # x = x/255.
 
 print(x.shape, y.shape)   # (1328, 3, 3, 1) (1328,)
@@ -59,7 +59,7 @@ print(x.shape, y.shape)   # (1328, 9) (1328,)
 
 #2. 모델 구성
 model = Sequential()
-model.add(Conv1D(filters=500, kernel_size=2, input_shape=(3,1)))   # input_shape=(3,1) 행무시
+model.add(Conv1D(filters=500, kernel_size=2, input_shape=(9,1)))   # input_shape=(3,1) 행무시
 model.add(Conv1D(250, 2))
 # model.add(MaxPooling2D())
 model.add(Conv1D(125, 2))        
@@ -90,9 +90,9 @@ date = date.strftime("%m%d_%H%M")
 # print(date)     
 # print(type(date))  
 
-path = './_save/keras59/'
+path = './_save/keras60/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5' 
-filepath = "".join([path, 'k59_04_', date, '_', filename])  
+filepath = "".join([path, 'k60_04_01_', date, '_', filename])  
 
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
@@ -140,5 +140,12 @@ print("로스 : ", loss)
 
 
 # Conv1D
+# acc :  0.0
+# 걸린 시간 : 19.47 초
+# 로스 :  [2278.81689453125, 0.0]
+# k60_04_
 
-# k59_04_
+# acc :  0.0
+# 걸린 시간 : 9.95 초
+# 로스 :  [2297.495361328125, 0.0]
+# k60_04_01_

@@ -55,19 +55,36 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 
 #2. 모델 구성
 model = Sequential()
-model.add(LSTM(32, input_shape=(5, 2))) 
+model.add(Conv1D(filters=32, kernel_size=2, input_shape=(5, 2)))
 model.add(Dropout(0.3))
-model.add(Dense(units=64, activation='relu'))
+model.add(Conv1D(64, 2))
 model.add(Dropout(0.3))
 model.add(Dense(units=148, activation='relu'))
 model.add(Dropout(0.3))
-model.add(Dense(units=168, activation='relu'))
+model.add(Flatten())                            
 
-model.add(Dense(units=128, activation='relu'))
+model.add(Dense(units=168, activation='relu'))    
 model.add(Dense(units=64, activation='relu'))
 model.add(Dense(units=32, activation='relu'))
 model.add(Dropout(0.2))
 model.add(Dense(units=1, activation='sigmoid'))
+
+
+
+# model.add(LSTM(32, input_shape=(5, 2))) 
+# model.add(Dropout(0.3))
+# model.add(Dense(units=64, activation='relu'))
+# model.add(Dropout(0.3))
+# model.add(Dense(units=148, activation='relu'))
+# model.add(Dropout(0.3))
+# model.add(Dense(units=168, activation='relu'))
+
+# model.add(Dense(units=128, activation='relu'))
+# model.add(Dense(units=64, activation='relu'))
+# model.add(Dense(units=32, activation='relu'))
+# model.add(Dropout(0.2))
+# model.add(Dense(units=1, activation='sigmoid'))
+
 
 #3. 컴파일, 훈련
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -90,9 +107,9 @@ date = date.strftime("%m%d_%H%M")
 print(date)     
 print(type(date))  
 
-path = './_save/keras59/'
+path = './_save/keras60/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5' 
-filepath = "".join([path, 'k59_08_01_', date, '_', filename])     
+filepath = "".join([path, 'k60_08_', date, '_', filename])     
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
 
@@ -162,3 +179,11 @@ mission_csv.to_csv(path + "sample_submission_0729_1407.csv")
 # 걸린 시간 :  13.29 초
 # 로스 :  [0.43744218349456787, 0.8030114769935608]
 # k59_08_01_
+
+
+# Conv1D
+# acc score :  0.7877116975187082
+# 걸린 시간 :  5.23 초
+# 로스 :  [0.5529307126998901, 0.7877116799354553]
+# k60_08_
+

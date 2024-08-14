@@ -3,6 +3,7 @@ from sklearn.datasets import load_breast_cancer
 import pandas as pd
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Dropout, Input, Conv2D, MaxPooling2D, Flatten
+from tensorflow.keras.layers import Conv1D
 from sklearn.model_selection import train_test_split
 import time
 from tensorflow.keras.callbacks import EarlyStopping
@@ -32,7 +33,7 @@ print(pd.DataFrame(y).value_counts())
 print(pd.Series(y).value_counts())
 print(pd.value_counts(y))
 
-x = x.reshape(569, 6, 5, 1)
+x = x.reshape(569, 6, 5)
 x = x/255.
 
 x_train, x_test, y_train, y_test = train_test_split(x, y,
@@ -48,22 +49,42 @@ print(y_test.shape)   # (114,)
 
 #2. 모델 구성
 model = Sequential()
-model.add(Conv2D(32, (3,3), activation='relu', input_shape=(6,5,1), strides=1, padding='same')) 
-model.add(Dropout(0.4))
-model.add(Conv2D(filters=16, kernel_size=(3,3), activation='relu', strides=1, padding='same'))
-model.add(Dropout(0.4))
-model.add(MaxPooling2D())
-model.add(Conv2D(16, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Dropout(0.4))
+model.add(Conv1D(filters=32, kernel_size=2, input_shape=(6, 5)))   # input_shape=(3,1) 행무시
+model.add(Dropout(0.4)) 
+model.add(Conv1D(16, 2))
+model.add(Dropout(0.4))    
 model.add(Flatten())                            
 
 model.add(Dense(units=16, activation='relu'))
-model.add(Dropout(0.4))
+model.add(Dropout(0.4))    
 model.add(Dense(units=16, activation='relu'))
-model.add(Dropout(0.4))
+model.add(Dropout(0.4)) 
+model.add(Dense(units=16, activation='relu'))
+model.add(Dropout(0.4)) 
 model.add(Dense(units=16, activation='relu'))
 model.add(Dense(units=16, activation='relu'))
-model.add(Dense(units=1, activation='sigmoid'))
+model.add(Dense(units=1))
+
+
+
+# model.add(Conv2D(32, (3,3), activation='relu', input_shape=(6,5,1), strides=1, padding='same')) 
+# model.add(Dropout(0.4))
+# model.add(Conv2D(filters=16, kernel_size=(3,3), activation='relu', strides=1, padding='same'))
+# model.add(Dropout(0.4))
+# model.add(MaxPooling2D())
+# model.add(Conv2D(16, (3,3), activation='relu', strides=1, padding='same'))        
+# model.add(Dropout(0.4))
+# model.add(Flatten())                            
+
+# model.add(Dense(units=16, activation='relu'))
+# model.add(Dropout(0.4))
+# model.add(Dense(units=16, activation='relu'))
+# model.add(Dropout(0.4))
+# model.add(Dense(units=16, activation='relu'))
+# model.add(Dense(units=16, activation='relu'))
+# model.add(Dense(units=1, activation='sigmoid'))
+
+
 
 #3. 컴파일, 훈련
 model.compile(loss = 'mse', optimizer='adam', metrics=['acc'])   #  accuracy, mse
@@ -90,11 +111,11 @@ print(type(date))
 
 
 
-path = './_save/keras39_mcp2/'
+path = './_save/keras60/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'   #'1000-0.7777.hdf5' (파일 이름. 텍스트)
 # {epoch:04d}-{val_loss:.4f} fit에서 빼와서 쓴것. 쭉 써도 되는데 가독성이 떨어지면 안좋음
 # 로스는 소수점 이하면 많아지기 때문에 크게 잡은것
-filepath = "".join([path, 'k39_06',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
+filepath = "".join([path, 'k60_06',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
 # 생성 예: ""./_save/keras29_mcp/k29_0726_1654_1000-0.7777.hdf5"   그냥 텍스트 파일. 문자를 생성한것
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
@@ -144,3 +165,10 @@ print('r2 score : ', r2)
 # 로스 :  0.04403650388121605
 # r2 score :  0.7485294117647059
 
+
+# Conv1D
+# acc_score :  0.9473684210526315
+# 걸리시간 :  12.99 초
+# 로스 :  0.04161321371793747
+# r2 score :  0.7485294117647059
+# k60_06

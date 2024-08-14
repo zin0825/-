@@ -14,7 +14,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 
 
 #1. 데이터
-path = 'C:\\프로그램\\ai5\\_data\\keggle\\bike-sharing-demand\\'   # 절대경로, 슬래시a, 슬래시t 특수문자로 경로 틀어짐
+path = 'C:\\ai5\\_data\\kaggle\\bike-sharing-demand\\'   # 절대경로, 슬래시a, 슬래시t 특수문자로 경로 틀어짐
 # path = 'C://프로그램//ai5//_data//bike-sharing-demand//'   # 절대경로
 # path = 'C:/프로그램/ai5/_data/bike-sharing-demand/'   # 절대경로
 # / // \ \\ 다 가능.
@@ -59,7 +59,7 @@ print(y.shape)   # (10886,)
 
 x = x.to_numpy()
 
-x = x.reshape(10886, 2, 2, 2)
+x = x.reshape(10886, 4, 2)
 x = x/255.
 
 x_train, x_test, y_train, y_test = train_test_split(x, y,
@@ -70,27 +70,23 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 
 #2. 모델 구성
 model = Sequential()
-model.add(Conv1D(filters=200, kernel_size=2, input_shape=(10,1)))   # input_shape=(3,1) 행무시
-model.add(Conv1D(200, 2))
-
-
-model.add(Conv2D(180, (3,3), activation='relu', input_shape=(2,2,2), strides=1,padding='same')) 
+model.add(Conv1D(filters=180, kernel_size=2, input_shape=(4, 2)))   # input_shape=(3,1) 행무시
 model.add(Dropout(0.3)) 
-model.add(Conv2D(filters=80, kernel_size=(3,3), activation='relu', strides=1, padding='same'))
-model.add(MaxPooling2D())
-model.add(Conv2D(80, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Conv2D(80, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Dropout(0.3)) 
-model.add(Conv2D(80, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Conv2D(60, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Dropout(0.3)) 
-model.add(Conv2D(60, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Dropout(0.3)) 
-model.add(Conv2D(45, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Conv2D(45, (3,3), activation='relu', strides=1, padding='same'))        
-model.add(Dropout(0.3)) 
+model.add(Conv1D(80, 2))
+# model.add(MaxPooling2D())       
 model.add(Flatten())                            
 
+model.add(Dense(units=80, activation='relu'))
+model.add(Dense(units=80, activation='relu'))
+model.add(Dropout(0.3)) 
+model.add(Dense(units=80, activation='relu'))
+model.add(Dense(units=60, activation='relu'))
+model.add(Dropout(0.3)) 
+model.add(Dense(units=60, activation='relu'))
+model.add(Dropout(0.3)) 
+model.add(Dense(units=45, activation='relu'))
+model.add(Dense(units=45, activation='relu'))
+model.add(Dropout(0.3)) 
 model.add(Dense(units=45, activation='relu'))
 model.add(Dropout(0.3)) 
 model.add(Dense(units=45, activation='relu'))
@@ -98,10 +94,42 @@ model.add(Dropout(0.3))
 model.add(Dense(units=45, activation='relu'))
 model.add(Dropout(0.3)) 
 model.add(Dense(units=25, activation='relu'))
-model.add(Dropout(0.3))
+model.add(Dropout(0.3)) 
 model.add(Dense(units=25, activation='relu'))
 model.add(Dense(units=15, activation='relu'))
-model.add(Dense(units=1, activation='linear'))
+model.add(Dense(units=1))
+
+
+
+
+# model.add(Conv2D(180, (3,3), activation='relu', input_shape=(2,2,2), strides=1,padding='same')) 
+# model.add(Dropout(0.3)) 
+# model.add(Conv2D(filters=80, kernel_size=(3,3), activation='relu', strides=1, padding='same'))
+# model.add(MaxPooling2D())
+# model.add(Conv2D(80, (3,3), activation='relu', strides=1, padding='same'))        
+# model.add(Conv2D(80, (3,3), activation='relu', strides=1, padding='same'))        
+# model.add(Dropout(0.3)) 
+# model.add(Conv2D(80, (3,3), activation='relu', strides=1, padding='same'))        
+# model.add(Conv2D(60, (3,3), activation='relu', strides=1, padding='same'))        
+# model.add(Dropout(0.3)) 
+# model.add(Conv2D(60, (3,3), activation='relu', strides=1, padding='same'))        
+# model.add(Dropout(0.3)) 
+# model.add(Conv2D(45, (3,3), activation='relu', strides=1, padding='same'))        
+# model.add(Conv2D(45, (3,3), activation='relu', strides=1, padding='same'))        
+# model.add(Dropout(0.3)) 
+# model.add(Flatten())                            
+
+# model.add(Dense(units=45, activation='relu'))
+# model.add(Dropout(0.3)) 
+# model.add(Dense(units=45, activation='relu'))
+# model.add(Dropout(0.3)) 
+# model.add(Dense(units=45, activation='relu'))
+# model.add(Dropout(0.3)) 
+# model.add(Dense(units=25, activation='relu'))
+# model.add(Dropout(0.3))
+# model.add(Dense(units=25, activation='relu'))
+# model.add(Dense(units=15, activation='relu'))
+# model.add(Dense(units=1, activation='linear'))
 
 
 
@@ -127,11 +155,11 @@ print(type(date))
 
 
 
-path = './_save/keras39_mcp2/'
+path = './_save/keras60/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'   #'1000-0.7777.hdf5' (파일 이름. 텍스트)
 # {epoch:04d}-{val_loss:.4f} fit에서 빼와서 쓴것. 쭉 써도 되는데 가독성이 떨어지면 안좋음
 # 로스는 소수점 이하면 많아지기 때문에 크게 잡은것
-filepath = "".join([path, 'k39_05',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
+filepath = "".join([path, 'k60_05_01_',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
 # 생성 예: ""./_save/keras29_mcp/k29_0726_1654_1000-0.7777.hdf5"   그냥 텍스트 파일. 문자를 생성한것
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
@@ -178,3 +206,15 @@ print('로스 : ', loss)
 # r2스코어 :  0.15166143953556055
 # 걸린 시간 : 6.25 초
 # 로스 :  25688.181640625
+
+
+# Conv1D
+# r2스코어 :  -0.14377355606821074
+# 걸린 시간 : 3.97 초
+# 로스 :  34634.125
+# k60_05_
+
+# r2스코어 :  -0.04405556614356798
+# 걸린 시간 : 3.8 초
+# 로스 :  31614.607421875
+# k60_05_01_

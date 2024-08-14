@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Dropout, Input, Conv2D, MaxPooling2D, Flatten
-from tensorflow.keras.layers import Dense, SimpleRNN, LSTM, GRU
+from tensorflow.keras.layers import Dense, SimpleRNN, LSTM, GRU, Conv1D
 import time
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score
@@ -41,7 +41,7 @@ y_ohe = to_categorical(y)
 print(y_ohe)
 print(y_ohe.shape)   # (178, 3)
 
-x = x.reshape(178, 13, 1, 1)
+x = x.reshape(178, 13, 1)
 
 x = x/255.
 
@@ -55,16 +55,33 @@ x_train, x_test, y_train, y_test = train_test_split(x, y_ohe,
 
 # #2. 모델구성
 model = Sequential()
-model.add(LSTM(180, input_shape=(13,1))) 
-model.add(Dropout(0.4)) 
-model.add(Dense(90, activation='relu'))
-model.add(Dropout(0.4)) 
-model.add(Dense(46, activation='relu'))
-model.add(Dropout(0.3)) 
-model.add(Dense(22, activation='relu'))
-model.add(Dropout(0.3)) 
-model.add(Dense(6, activation='relu'))
-model.add(Dense(3, activation='softmax'))
+model.add(Conv1D(filters=180, kernel_size=2, input_shape=(13, 1)))
+model.add(Dropout(0.4))
+model.add(Conv1D(90, 2))
+model.add(Dropout(0.4))
+model.add(Dense(units=46, activation='relu'))
+model.add(Dropout(0.3))
+model.add(Flatten())                            
+
+model.add(Dense(units=22, activation='relu'))    
+model.add(Dropout(0.3))
+model.add(Dense(units=6, activation='relu'))
+model.add(Dropout(0.3))
+model.add(Dense(units=36, activation='relu'))
+model.add(Dense(units=3, activation='sigmoid'))
+
+
+
+# model.add(LSTM(180, input_shape=(13,1))) 
+# model.add(Dropout(0.4)) 
+# model.add(Dense(90, activation='relu'))
+# model.add(Dropout(0.4)) 
+# model.add(Dense(46, activation='relu'))
+# model.add(Dropout(0.3)) 
+# model.add(Dense(22, activation='relu'))
+# model.add(Dropout(0.3)) 
+# model.add(Dense(6, activation='relu'))
+# model.add(Dense(3, activation='softmax'))
 
 
 #2-2. 모델구성(함수형)
@@ -97,7 +114,7 @@ model.add(Dense(3, activation='softmax'))
 # model.add(Dense(units=3, activation='softmax'))
 
 
-model.summary()
+# model.summary()
 
 
 
@@ -123,11 +140,11 @@ print(type(date))
 
 
 
-path = './_save/keras59/'
+path = './_save/keras60/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'   #'1000-0.7777.hdf5' (파일 이름. 텍스트)
 # {epoch:04d}-{val_loss:.4f} fit에서 빼와서 쓴것. 쭉 써도 되는데 가독성이 떨어지면 안좋음
 # 로스는 소수점 이하면 많아지기 때문에 크게 잡은것
-filepath = "".join([path, 'k59_09_01_',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
+filepath = "".join([path, 'k60_09_',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
 # 생성 예: ""./_save/keras29_mcp/k29_0726_1654_1000-0.7777.hdf5"   그냥 텍스트 파일. 문자를 생성한것
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
@@ -203,3 +220,11 @@ print("로스 : ", loss)
 # 걸린 시간 :  4.38 초
 # 로스 :  [0.6722772121429443, 0.6666666865348816]
 # k59_09_01_
+
+
+# Conv1D
+# acc score :  0.3888888888888889
+# r2 score :  -0.5428904969987633
+# 걸린 시간 :  3.88 초
+# 로스 :  [0.8742835521697998, 0.6111111044883728]
+# k60_09_

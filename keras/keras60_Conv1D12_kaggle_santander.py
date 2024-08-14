@@ -8,7 +8,7 @@ import numpy as np
 import pandas as pd
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Dropout, Input, Conv2D, MaxPooling2D, Flatten
-from tensorflow.keras.layers import Dense, SimpleRNN, LSTM, GRU
+from tensorflow.keras.layers import Dense, SimpleRNN, LSTM, GRU, Conv1D
 import time
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, accuracy_score
@@ -71,17 +71,32 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 
 # #2. 모델구성
 model = Sequential()
-model.add(LSTM(500, input_shape=(200, 1))) 
+model.add(Conv1D(filters=500, kernel_size=2, input_shape=(200, 1)))
 model.add(Dropout(0.6))
-model.add(Dense(400))
-model.add(Dense(340))
+model.add(Conv1D(400, 2))
+model.add(Flatten()) 
+model.add(Dense(units=340))
 model.add(Dropout(0.6))
-model.add(Dense(330))
-model.add(Dense(250))
+model.add(Dense(units=330))
+model.add(Dense(units=250))
 model.add(Dropout(0.6))
-model.add(Dense(100))
-model.add(Dense(50))
-model.add(Dense(1, activation='sigmoid'))
+model.add(Dense(units=100)) 
+model.add(Dense(units=50))
+model.add(Dense(units=1, activation='sigmoid'))
+
+
+
+# model.add(LSTM(500, input_shape=(200, 1))) 
+# model.add(Dropout(0.6))
+# model.add(Dense(400))
+# model.add(Dense(340))
+# model.add(Dropout(0.6))
+# model.add(Dense(330))
+# model.add(Dense(250))
+# model.add(Dropout(0.6))
+# model.add(Dense(100))
+# model.add(Dense(50))
+# model.add(Dense(1, activation='sigmoid'))
 
 
 # #2-2. 모델구성(함수형)  
@@ -142,11 +157,11 @@ print(type(date))
 
 
 
-path = './_save/keras59/'
+path = './_save/keras60/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'   #'1000-0.7777.hdf5' (파일 이름. 텍스트)
 # {epoch:04d}-{val_loss:.4f} fit에서 빼와서 쓴것. 쭉 써도 되는데 가독성이 떨어지면 안좋음
 # 로스는 소수점 이하면 많아지기 때문에 크게 잡은것
-filepath = "".join([path, 'k59_12_',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
+filepath = "".join([path, 'k60_12_',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
 # 생성 예: ""./_save/keras29_mcp/k29_0726_1654_1000-0.7777.hdf5"   그냥 텍스트 파일. 문자를 생성한것
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
@@ -244,3 +259,11 @@ print('로스 : ', loss)
 # 걸린 시간 :  11.1 초
 # 로스 :  [0.2337251454591751, 0.9139750003814697]
 # 쥐피유 돈다!!!
+
+
+
+# Conv1D
+# acc score :  0.91055
+# 걸린 시간 :  511.95 초
+# 로스 :  [0.24398164451122284, 0.9105499982833862]
+# k60_12_

@@ -22,6 +22,7 @@ from tensorflow.keras.datasets import mnist
 import pandas as pd
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D, Input
+from tensorflow.keras.layers import Dense, SimpleRNN, LSTM, GRU, Conv1D
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.metrics import r2_score, accuracy_score
 import time
@@ -77,8 +78,8 @@ x_augmented = train_datagen.flow(x_augmented, y_augmented,
 
 print(x_augmented.shape)   # (40000, 28, 28, 1)
 
-x_train = x_train.reshape(60000, 28, 28, 1)
-x_test = x_test.reshape(10000, 28, 28, 1)
+x_train = x_train.reshape(60000, 28, 28)
+x_test = x_test.reshape(10000, 28, 28)
 
 print(x_train.shape, x_test.shape)   # (60000, 28, 28, 1) (10000, 28, 28, 1)
 
@@ -97,24 +98,38 @@ y_test = to_categorical(y_test)
 
 
 #2. 모델
+model = Sequential()
+model.add(Conv1D(filters=164, kernel_size=2, input_shape=(28, 28)))
+model.add(Conv1D(164, 2))
+model.add(Flatten()) 
+model.add(Dropout(0.3))
+model.add(Dense(units=132, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(units=62, activation='relu'))    
+model.add(Dense(units=36, activation='relu'))    
+model.add(Dropout(0.4))
+model.add(Dense(units=10, activation='relu'))    
+model.add(Dense(units=10, activation='sigmoid'))
 
-input1 = Input(shape=(28, 28, 1))   # = input_dim = (3,)))
-convd1 = Conv2D(164, (3,3), strides=1, padding='same', name='ys1')(input1)   # 앞에 레이어의 이름이 명시   # 함수형은 순차형보다 자유로움
-convd2 = Conv2D(164, (3,3), strides=1, 
-                padding='same',name='ys2')(convd1)
-maxpool1 = MaxPooling2D((2,2))(convd2)
-drop1 = Dropout(0.3)(maxpool1)
-convd3 = Conv2D(132, (2,2), name='ys3')(drop1) 
-drop2 = Dropout(0.5)(convd3)
-flatten = Flatten()(drop2)
-dense1 = Dense(62, name='ys4')(flatten)
-dense2 = Dense(36, name='ys5')(dense1)
-drop3 = Dropout(0.4)(dense2)
-dense3 = Dense(10)(drop3)
-output1 = Dense(10)(dense3)
-model = Model(inputs=input1, outputs=output1)   # 모델의 명시를 마지막에 함
 
-model.summary()
+
+# input1 = Input(shape=(28, 28, 1))   # = input_dim = (3,)))
+# convd1 = Conv2D(164, (3,3), strides=1, padding='same', name='ys1')(input1)   # 앞에 레이어의 이름이 명시   # 함수형은 순차형보다 자유로움
+# convd2 = Conv2D(164, (3,3), strides=1, 
+#                 padding='same',name='ys2')(convd1)
+# maxpool1 = MaxPooling2D((2,2))(convd2)
+# drop1 = Dropout(0.3)(maxpool1)
+# convd3 = Conv2D(132, (2,2), name='ys3')(drop1) 
+# drop2 = Dropout(0.5)(convd3)
+# flatten = Flatten()(drop2)
+# dense1 = Dense(62, name='ys4')(flatten)
+# dense2 = Dense(36, name='ys5')(dense1)
+# drop3 = Dropout(0.4)(dense2)
+# dense3 = Dense(10)(drop3)
+# output1 = Dense(10)(dense3)
+# model = Model(inputs=input1, outputs=output1)   # 모델의 명시를 마지막에 함
+
+# model.summary()
 
 
 #3. 컴파일, 훈련

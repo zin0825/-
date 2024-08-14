@@ -1,3 +1,12 @@
+# jena를 Dnn으로 구성
+
+# x : (42만, 144, 144) -> (42만, 144 * 144)
+# y : (42aks, 144)
+
+# 맹그러봐.
+
+
+
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, LSTM, Dropout, Flatten
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
@@ -5,6 +14,7 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler, StandardScaler, MaxAbsScaler, RobustScaler
 from sklearn.metrics import mean_squared_error
+from tensorflow.keras.layers import Conv1D, Flatten, MaxPooling1D, Bidirectional 
 
 import time
 import numpy as np
@@ -80,13 +90,16 @@ x_pred = np.array(x_pred).reshape(1, 144, 14)
 
 
 
-x = x[:-144, :]   # 144개의 데이터를 뺴줌 / 1-> 144로 변경함
-y = y[144:]
+x = x[:-1, :]
+y = y[1:]
 # 1에 144개의 데이터가 들어갔음
 
 # print(x.shape)  # (420407, 144, 14)
 # print(y.shape)  # (420407, 144)
 
+x = x.reshape(420407, 144 * 14) 
+x_pred = x_pred.reshape(1, 144 * 14)
+# x_pred = np.array(x_pred).reshape(1, 144, 14) 저놈이 이 shpae에 맞춰서 변경
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8,
                                                     shuffle= True,
@@ -96,12 +109,17 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8,
 
 # 2. 모델
 model = Sequential()
-model.add(LSTM(32, return_sequences=True, input_shape=(144, 14)))   # timesteps, features / activation='tanh'
-model.add(LSTM(120))
+# model.add(LSTM(32, return_sequences=True, input_shape=(144, 14)))   # timesteps, features / activation='tanh'
+# model.add(LSTM(120))
+# model.add(Conv1D(filters=32, kernel_size=7, input_shape=(144, 14)))
+# model.add(Conv1D(120, 7))
+# model.add(Flatten())   # Flatten은 2차원을 1차원으로 바꿔줌 / 이거 넣어야 돌아감
+
+model.add(Dense(32, activation='relu', input_shape=(144 * 14,)))
+model.add(Dense(220, activation='relu'))
+model.add(Dense(320, activation='relu'))
 model.add(Dense(400, activation='relu'))
-model.add(Dropout(0.1))
 model.add(Dense(370, activation='relu'))
-model.add(Dropout(0.1)) 
 model.add(Dense(320, activation='relu'))
 model.add(Dense(300, activation='relu'))
 model.add(Dense(288, activation='relu'))
@@ -147,14 +165,14 @@ es = EarlyStopping(monitor='val_loss', mode='min',
 # # )
 
 
-model.fit(x_train, y_train, epochs=1000, batch_size=2224, 
+model.fit(x_train, y_train, epochs=3000, batch_size=2224, 
           verbose=1, 
           validation_split=0.3, 
           callbacks=[es])
 
 
-path2 = 'C:\\ai5\\_save\\keras55\\'
-model.save(path2 + 'jena_최진영_10.h5')
+path2 = 'C:\\ai5\\_save\\keras61\\'
+model.save(path2 + 'keras61_jena_05.h5')
 
 
 end = time.time()
@@ -219,9 +237,106 @@ print("RMSE : ", rmse)
 # RMSE :  17.665175706773116
 
 
-
-
 # 로스 :  [0.40843600034713745, 0.11403948813676834]
 # 걸린 시간 :  1042.08 초
 # RMSE :  0.7847969258434951
-# jena_최진영_07.h50
+# jena_최진영_07.h5
+
+
+# Conv1D
+# 로스 :  [12.316596031188965, 0.006089337170124054]
+# 걸린 시간 :  67.52 초
+# RMSE :  3.591258616675911
+# jena_최진영_09.h5
+
+# epochs=1000
+# 로스 :  [13.299722671508789, 0.006393804214894772]
+# 걸린 시간 :  77.8 초
+# RMSE :  3.7156264721195633
+# jena_최진영_10.h5
+
+
+# model.add(Conv1D(filters=32, kernel_size=7, input_shape=(144, 14)))
+# model.add(Conv1D(120, 7))
+# epochs=2000
+# # 로스 :  [10.879790306091309, 0.014681011438369751]
+# 걸린 시간 :  161.41 초
+# RMSE :  3.3646938003108198
+# jena_최진영_11.h5
+
+# 로스 :  [4.09359884262085, 0.03151945769786835]
+# 걸린 시간 :  242.26 초
+# RMSE :  2.695003680187871
+# jena_최진영_12.h5
+
+
+# epochs=3000
+# 로스 :  [5.93628454208374, 0.03351276367902756]
+# 걸린 시간 :  125.55 초
+# RMSE :  2.1290367396476486
+# jena_최진영_13.h5
+
+
+# model.add(Dense(32, activation='relu', input_shape=(144 * 14,)))
+# model.add(Dense(120, activation='relu'))
+# model.add(Dense(120, activation='relu'))
+# model.add(Dense(400, activation='relu'))
+# model.add(Dropout(0.1))
+# model.add(Dense(370, activation='relu'))
+# model.add(Dropout(0.1)) 
+# model.add(Dense(320, activation='relu'))
+# model.add(Dense(300, activation='relu'))
+# model.add(Dense(288, activation='relu'))
+# model.add(Dense(144))
+
+
+# Dnn
+# 로스 :  [10.998258590698242, 0.006155939307063818]
+# 걸린 시간 :  32.17 초
+# RMSE :  4.266120480050729
+# keras61_jena_01.h5
+
+# 로스 :  [10.55929946899414, 0.009445608593523502]
+# 걸린 시간 :  66.44 초
+# RMSE :  3.3446215270025683
+# keras61_jena_02.h5
+
+# 로스 :  [8.602106094360352, 0.012383238412439823]
+# 걸린 시간 :  42.89 초
+# RMSE :  2.338547553325239
+# keras61_jena_03.h5
+
+# model.add(Dense(32, activation='relu', input_shape=(144 * 14,)))
+# model.add(Dense(120, activation='relu'))
+# model.add(Dense(320, activation='relu'))
+# model.add(Dense(400, activation='relu'))
+# model.add(Dropout(0.1))
+# model.add(Dense(370, activation='relu'))
+# model.add(Dropout(0.1)) 
+# model.add(Dense(320, activation='relu'))
+# model.add(Dense(300, activation='relu'))
+# model.add(Dense(288, activation='relu'))
+# model.add(Dense(144))
+
+# 로스 :  [8.640109062194824, 0.012897025793790817]
+# 걸린 시간 :  43.43 초
+# RMSE :  2.3858331536039494
+# keras61_jena_04.h5
+
+# epochs=4000 별루 -> 저장 x
+
+
+# model.add(Dense(32, activation='relu', input_shape=(144 * 14,)))
+# model.add(Dense(220, activation='relu'))
+# model.add(Dense(320, activation='relu'))
+# model.add(Dense(400, activation='relu'))
+# model.add(Dense(370, activation='relu'))
+# model.add(Dense(320, activation='relu'))
+# model.add(Dense(300, activation='relu'))
+# model.add(Dense(288, activation='relu'))
+# model.add(Dense(144))
+# epochs=3000
+
+# keras61_jena_05.h5
+
+

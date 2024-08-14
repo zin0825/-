@@ -22,7 +22,7 @@ print(pd.value_counts(y, sort=False))   # 확인, ascending=True 오름차순  #
 import numpy as np
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Dropout, Input, Conv2D, MaxPooling2D, Flatten
-from tensorflow.keras.layers import Dense, SimpleRNN, LSTM, GRU
+from tensorflow.keras.layers import Dense, SimpleRNN, LSTM, GRU, Conv1D
 import time
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, accuracy_score
@@ -78,14 +78,26 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 
 # #2. 모델구성
 model = Sequential()
-model.add(LSTM(180, input_shape=(64, 1))) 
+model.add(Conv1D(filters=180, kernel_size=2, input_shape=(64, 1)))
 model.add(Dropout(0.6))
-model.add(Dense(90))
+model.add(Conv1D(90, 2))
+model.add(Flatten()) 
 model.add(Dropout(0.5))
-model.add(Dense(46))
+model.add(Dense(units=46, activation='relu'))
 model.add(Dropout(0.4))
-model.add(Dense(6))
-model.add(Dense(10, activation='softmax'))
+model.add(Dense(units=6, activation='relu'))    
+model.add(Dense(units=10, activation='softmax'))
+
+
+
+# model.add(LSTM(180, input_shape=(64, 1))) 
+# model.add(Dropout(0.6))
+# model.add(Dense(90))
+# model.add(Dropout(0.5))
+# model.add(Dense(46))
+# model.add(Dropout(0.4))
+# model.add(Dense(6))
+# model.add(Dense(10, activation='softmax'))
 
 
 # #2-2. 모델구성(함수형)  
@@ -137,11 +149,11 @@ print(type(date))
 
 
 
-path = './_save/keras59/'
+path = './_save/keras60/'
 filename = '{epoch:04d}-{val_loss:.4f}.hdf5'   #'1000-0.7777.hdf5' (파일 이름. 텍스트)
 # {epoch:04d}-{val_loss:.4f} fit에서 빼와서 쓴것. 쭉 써도 되는데 가독성이 떨어지면 안좋음
 # 로스는 소수점 이하면 많아지기 때문에 크게 잡은것
-filepath = "".join([path, 'k59_11_01_',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
+filepath = "".join([path, 'k60_11_01_',date, '_' , filename])    # 문자열을 만드는데 아무것도 없는 공문자를 만들고
 # 생성 예: ""./_save/keras29_mcp/k29_0726_1654_1000-0.7777.hdf5"   그냥 텍스트 파일. 문자를 생성한것
 
 ######################### cmp 세이브 파일명 만들기 끗 ###########################
@@ -227,3 +239,17 @@ print('로스 : ', loss)
 # 걸린 시간 :  9.05 초
 # 로스 :  [1.3074703216552734, 0.5444444417953491]
 # k59_11_01_
+
+
+# Conv1D
+# acc score :  0.9277777777777778
+# r2 score :  0.8950617283950617
+# 걸린 시간 :  11.54 초
+# 로스 :  [0.17957384884357452, 0.9555555582046509]
+# k60_11_
+
+# acc score :  0.8666666666666667
+# r2 score :  0.7962962962962964
+# 걸린 시간 :  11.63 초
+# 로스 :  [0.28716596961021423, 0.8999999761581421]
+# k60_11_01_
