@@ -6,7 +6,7 @@ from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Dropout, Input, Conv2D, MaxPooling2D, Flatten
 from tensorflow.keras.layers import Conv1D
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score
+from sklearn.metrics import r2_score, accuracy_score
 import time
 from  tensorflow.keras. callbacks import EarlyStopping, ModelCheckpoint
 
